@@ -3,7 +3,7 @@
 
 # Overview
 
-The project is a domain logic which aims to handle alert and events for a alert notification system.
+The project is a domain logic which aims to handle alerts and events for an notification system.
 The domain logic is implemented using a `hexagonal architecture`.
 
 Some references about hexagonal architecture:
