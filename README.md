@@ -1,5 +1,5 @@
 # Pager: Domain logic
-![build](https://github.com/antamb/pager/actions/workflows/build.yaml/badge.svg)
+![build](https://github.com/antamb/pager/actions/workflows/test.yaml/badge.svg)
 
 # Overview
 
@@ -50,5 +50,5 @@ docker run -it --rm --name pager-test pager-docker
 
 ### pipeline
 
-> There is Github actions pipeline for this project
+> There is Github actions pipeline for this project [here](https://github.com/antamb/pager/actions/workflows/test.yaml)
 
