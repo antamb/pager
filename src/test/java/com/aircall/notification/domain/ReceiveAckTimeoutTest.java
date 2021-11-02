@@ -122,10 +122,8 @@ class ReceiveAckTimeoutTest {
         // Given
         Alert alert = givenAlert(false, 1);
         MonitoredService healthyService = givenMonitoredService(MonitoredService.STATE.HEALTHY);
-        MonitoredService unhealthyService = givenMonitoredService(MonitoredService.STATE.HEALTHY);
+        MonitoredService unhealthyService = givenMonitoredService(MonitoredService.STATE.UNHEALTHY);
 
-        given(repository.findMonitoredServiceByExternalId(monitoredServiceId))
-                .willReturn(Optional.of(unhealthyService));
         given(repository.updateMonitoredServiceState(healthyService.getId(),
                 MonitoredService.STATE.HEALTHY)).willReturn(healthyService);
         given(repository.findAlertById(eq(alert.getId()))).willReturn(Optional.of(alert));
