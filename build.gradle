@@ -1,0 +1,96 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+    id "com.adarshr.test-logger" version "3.0.0"
+    id 'jacoco'
+}
+
+group = 'com.aircall.technical.test'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.projectlombok:lombok:1.18.18'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    implementation 'io.cucumber:cucumber-core:7.0.0'
+
+    runtimeOnly 'com.h2database:h2'
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.cucumber:cucumber-java:7.0.0'
+    testImplementation 'io.cucumber:cucumber-junit:7.0.0'
+    testImplementation 'io.cucumber:cucumber-spring:7.0.0'
+    testImplementation 'io.rest-assured:rest-assured:4.4.0'
+    testImplementation 'org.junit.vintage:junit-vintage-engine'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// A resolvable configuration to collect source code
+def sourcesPath = configurations.create("sourcesPath") {
+    visible = false
+    canBeResolved = true
+    canBeConsumed = false
+    extendsFrom(configurations.implementation)
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, 'source-folders'))
+    }
+}
+
+// A resolvable configuration to collect JaCoCo coverage data
+def coverageDataPath = configurations.create("coverageDataPath") {
+    visible = false
+    canBeResolved = true
+    canBeConsumed = false
+    extendsFrom(configurations.implementation)
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, 'jacoco-coverage-data'))
+    }
+}
+
+// Task to gather code coverage from multiple subprojects
+def codeCoverageReport = tasks.register('codeCoverageReport', JacocoReport) {
+    additionalClassDirs(configurations.runtimeClasspath)
+    additionalSourceDirs(sourcesPath.incoming.artifactView { lenient(true) }.files)
+    executionData(coverageDataPath.incoming.artifactView { lenient(true) }.files.filter { it.exists() })
+
+    reports {
+        // xml is usually used to integrate code coverage with
+        // other tools like SonarQube, Coveralls or Codecov
+        xml.required = true
+
+        // HTML reports can be used to see code coverage
+        // without any external tools
+        html.required = true
+    }
+}
+
+// Make JaCoCo report generation part of the 'check' lifecycle phase
+tasks.named("check") {
+    dependsOn(codeCoverageReport)
+}
