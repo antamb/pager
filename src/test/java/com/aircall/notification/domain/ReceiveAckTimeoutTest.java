@@ -32,7 +32,7 @@ import static org.mockito.Mockito.never;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-class ReceiveAckTimeout {
+class ReceiveAckTimeoutTest {
 
     private PagerService pagerService;
     @Mock
